@@ -18,6 +18,7 @@ STRING_LIST * makeStringList(char * word, STRING_LIST * stringList);
 
 %}
 
+/* Define the union for yylval */
 %union {
 	char * str;	/* string literals */
 	char * varName; /* environment variable names */

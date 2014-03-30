@@ -1,4 +1,5 @@
 %{
+#define YY_NO_INPUT
 #include <stdlib.h>
 #include <string.h>
 #include "envsh_structs.h"
@@ -6,9 +7,11 @@
 void yyerror(char * s);
 %}
 
+%option nounput
+
 alpha 		[A-Za-z]
 
-alphaAug	(_|/|-|{alpha})
+alphaAug	(_|/|-|.|{alpha})
 
 digit		[0-9]
 
@@ -46,11 +49,9 @@ varName		(_|{alpha})+
 			return VAR_NAME;
 		}
 
-[{digit}{alphaAug}]+		{
-					yylval.word = strdup(yytext);
-					return WORD;
-				}
-
-"."		yyerror("Unknown Character");
+[^><% \t\n\"]+		{
+				yylval.word = strdup(yytext);
+				return WORD;
+			}
 
 %%

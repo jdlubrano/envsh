@@ -11,6 +11,5 @@ int main(int argc, char * argv[])
 	initCmdPrefix();
 	printCmdPrompt();
 	int status = yyparse();
-	printf("Status: %d\n", status);
-	return 0;
+	return status;
 }

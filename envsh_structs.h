@@ -7,6 +7,8 @@
 #ifndef _ENVSH_STRUCTS_H_
 #define _ENVSH_STRUCTS_H_
 
+#define INPUT_LIMIT 256
+
 typedef struct word_list {
 	struct word_list * next;
 	char * word;
@@ -16,5 +18,12 @@ typedef struct string_list {
 	struct string_list * next;
 	char * string;
 } STRING_LIST;
+
+typedef struct environ_list {
+	struct environ_list * next;
+	struct environ_list * prev;
+	char varName[INPUT_LIMIT];
+	char varValue[INPUT_LIMIT];
+} ENVIRON_LIST;
 
 #endif /* _ENVSH_STRUCTS_H_DEFINED_  */

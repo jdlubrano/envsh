@@ -7,11 +7,18 @@
 CC 	= gcc -Wall
 OPTIONS = -lfl
 FLEX	= /usr/bin/flex
+OBJECTS = y.tab.o lex.yy.o main.o envsh.o
 
-envsh:
+envsh: $(OBJECTS)
+#	bison -y -d parser.y
+#	flex scanner.l
+	$(CC) $^ -o envsh $(OPTIONS)
+
+y.tab.c:
 	bison -y -d parser.y
+lex.yy.c:
 	flex scanner.l
-	$(CC) -c y.tab.c lex.yy.c main.c envsh.c 
-	$(CC) y.tab.o lex.yy.o main.o envsh.o -o envsh $(OPTIONS)
+%.o: %.c
+	$(CC) -c $< -o $@
 clean:
-	rm -f *.o envsh
+	rm -f lex.yy.* y.tab.* *.o envsh

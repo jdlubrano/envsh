@@ -16,4 +16,6 @@ void printCmdPrompt(void);
 void builtIn(int cmd, char * str, char * varName);
 void userCmd(WORD_LIST * wordList, STRING_LIST * stringList);
 
+ENVIRON_LIST * environList;
+
 #endif /* _ENVSH_H_DEFINED_ */
