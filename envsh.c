@@ -7,17 +7,18 @@
 #include "y.tab.h"
 
 static char * cmdPrefix;
-
+extern int INPUT_FROM_FILE;
 extern ENVIRON_LIST * environList;
 
-void initCmdPrefix()
+void initCmdPrompt()
 {
-	cmdPrefix = "envsh";
+	cmdPrefix = "envsh > ";
 }
 
 void printCmdPrompt()
 {
-	printf("%s> ", cmdPrefix);
+	printf("\n");
+	printf("%s", cmdPrefix);
 }
 
 void addToEnvironList(char * varName, char * varValue)
@@ -61,7 +62,7 @@ void listEnv()
 	ENVIRON_LIST * currentEntry = environList;
 	while(currentEntry != NULL)
 	{
-		printf("%s=%s\n", currentEntry->varName, currentEntry->varValue);
+		printf("\n%s=%s", currentEntry->varName, currentEntry->varValue);
 		currentEntry = currentEntry->next;
 	}
 }
@@ -84,6 +85,7 @@ void removeFromEnv(char * varName)
 			{
 				/* Start the list at the second entry */
 				environList = currentEntry->next;
+				free(currentEntry);
 				removedEntry = 1;
 			}
 			else
@@ -96,7 +98,8 @@ void removeFromEnv(char * varName)
 				removedEntry = 1;
 			}
 		}
-		currentEntry = currentEntry->next;
+		if(!removedEntry)
+			currentEntry = currentEntry->next;
 	}
 	/* If no such entry was found, tell the user. */
 	if(!removedEntry)
@@ -105,7 +108,6 @@ void removeFromEnv(char * varName)
 
 void builtIn(int cmd, char * str, char * varName)
 {
-	int sysCallStatus = 0;
 	switch(cmd) {
 		case PROMPT: 
 			cmdPrefix = str;
@@ -120,8 +122,7 @@ void builtIn(int cmd, char * str, char * varName)
 			listEnv();
 			break;
 		case SETDIR:
-			sysCallStatus = chdir(str);
-			if(sysCallStatus < 0)
+			if(chdir(str) < 0)
 				perror("setdir");
 			break;
 		case BYE:

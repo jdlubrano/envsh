@@ -15,6 +15,7 @@ int yylex(void);
 void yyerror(char * s);
 WORD_LIST * makeWordList(char * word, WORD_LIST * wordList);
 STRING_LIST * makeStringList(char * word, STRING_LIST * stringList);
+int yydebug = 1;
 
 %}
 
@@ -38,8 +39,8 @@ STRING_LIST * makeStringList(char * word, STRING_LIST * stringList);
 %%
 
 session:
-	   	lines			{ return 0; }
-	      | /* NULL */	
+	   	lines			{ /* Do nothing */ }	
+	      | /* NULL */		{ /* Do nothing */ }
 	      ;
 
 lines:
@@ -59,6 +60,7 @@ command:
 	      |	LISTENV			{ builtIn(LISTENV, NULL, NULL); }
 	      |	SETDIR WORD		{ builtIn(SETDIR, $2, NULL); }
 	      |	BYE			{ builtIn(BYE, NULL, NULL); }
+	      | word_list		{ userCmd($1, NULL); }
 	      |	word_list string_list	{ userCmd($1, $2); }
 	      ;
 

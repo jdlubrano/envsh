@@ -1,0 +1,24 @@
+% change my prompt
+        prompt "> "
+
+        % set some environment variables
+        setenv LESS "--LINE-NUMBERS"
+        setenv LS_COLORS ""
+
+        % print a list of the current environment
+        % variables and their values. The following
+        % listenv command would print:
+        %   LESS="--LINE-NUMBERS"
+        %   LS_COLORS=""
+        listenv
+
+        % unset an environment variable
+        unsetenv LS_COLORS
+
+        % Move around the file system with cd commands
+        setdir /usr
+        setdir src/proj1
+        setdir /usr/local
+        setdir ./bin
+        setdir ../share
+

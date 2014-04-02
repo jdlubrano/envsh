@@ -14,9 +14,9 @@ envsh: $(OBJECTS)
 #	flex scanner.l
 	$(CC) $^ -o envsh $(OPTIONS)
 
-y.tab.c:
+y.tab.c: parser.y
 	bison -y -d parser.y
-lex.yy.c:
+lex.yy.c: scanner.l
 	flex scanner.l
 %.o: %.c
 	$(CC) -c $< -o $@

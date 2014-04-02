@@ -11,7 +11,7 @@
 
 #include <stdlib.h>
 
-void initCmdPrefix(void);
+void initCmdPrompt(void);
 void printCmdPrompt(void);
 void builtIn(int cmd, char * str, char * varName);
 void userCmd(WORD_LIST * wordList, STRING_LIST * stringList);
