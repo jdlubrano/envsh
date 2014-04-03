@@ -11,7 +11,7 @@
 #include "envsh.h"
 
 extern void builtIn(int cmd, char * str, char * varName);
-extern void userCmd(WORD_LIST * wordList, STRING_LIST * stringList);
+extern void userCmd(WORD_LIST * wordList);
 int yylex(void);
 void yyerror(char * s);
 void printWordList(WORD_LIST * wordList);
@@ -63,8 +63,8 @@ command:
 	      |	LISTENV			{ builtIn(LISTENV, NULL, NULL); }
 	      |	SETDIR WORD		{ builtIn(SETDIR, $2, NULL); }
 	      |	BYE			{ builtIn(BYE, NULL, NULL); }
-	      | word_list		{ userCmd($1, NULL); }
-	      |	word_list string_list	{ userCmd($1, $2); }
+	      | word_list		{ userCmd($1); }
+	      |	word_list string_list	{ userCmd($1); }
 	      ;
 
 word_list:
