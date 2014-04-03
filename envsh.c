@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/wait.h>
 #include "envsh_structs.h"
 #include "envsh.h"
 #include "y.tab.h"
@@ -31,7 +36,7 @@ void addToEnvironList(char * varName, char * varValue)
 		if(strcmp(currentEntry->varName, varName) == 0)
 		{
 			strncpy(currentEntry->varValue, varValue, 
-					sizeof(currentEntry->varValue));
+				sizeof(currentEntry->varValue));
 			found = 1;
 	
 		}
@@ -136,33 +141,33 @@ void builtIn(int cmd, char * str, char * varName)
 	}
 }
 
-void userCmd(WORD_LIST * wordList)
+void userCmd(ARG_LIST * argList, char * inputRedirect, char * outputRedirect)
 {
 	/* 
 	 * Count the number of entries in the 
 	 * word list in order to size the array.
 	 */
-	int wordListSize = 0;
+	int argListSize = 0;
 	int environListSize = 0;
-	WORD_LIST * wordListIterator = wordList;
+	ARG_LIST * argListIterator = argList;
 	/* Iterate through the word list to calculate the size */
-	while(wordListIterator != NULL)
+	while(argListIterator != NULL)
 	{
-		wordListSize++;
-		wordListIterator = wordListIterator->next;
+		argListSize++;
+		argListIterator = argListIterator->next;
 	}
 	/* 
 	 * Allocate a new array for the args in the word list 
 	 * plus one for the NULL sentinel
 	 */ 
-	char ** argv = malloc((wordListSize + 1) * sizeof(char[INPUT_LIMIT]));
+	char ** argv = malloc((argListSize + 1) * sizeof(char[INPUT_LIMIT]));
 	/* Copy word list to argv */
-	wordListIterator = wordList;
+	argListIterator = argList;
 	int i = 0;
-	while(wordListIterator != NULL)
+	while(argListIterator != NULL)
 	{
-		argv[i] = wordListIterator->word;
-		wordListIterator = wordListIterator->next;
+		argv[i] = argListIterator->word;
+		argListIterator = argListIterator->next;
 		i++;
 	}
 	argv[i] = NULL;
@@ -172,6 +177,9 @@ void userCmd(WORD_LIST * wordList)
 		environListSize++;
 		environListIterator = environListIterator->next;
 	}
+	/*
+	 * NOTE: The environ array has to be able to hold a string of size "[256]=[256]"
+	 */
 	char ** environ = malloc((environListSize + 1) * sizeof(char[2*INPUT_LIMIT + 1]));
 	/* 
 	 * Create environ strings in VAR=VAL format for each variable
@@ -188,5 +196,52 @@ void userCmd(WORD_LIST * wordList)
 		i++;
 	}
 	environ[i] = NULL;
-	execve(argv[0], argv, environ);
+
+	pid_t pid;
+	int status;
+
+	if((pid = fork()) == 0)
+	{
+		if(inputRedirect != NULL)
+		{
+			int fdIn;
+			if((fdIn = open(inputRedirect, O_RDONLY, 0)) < 0)
+			{
+				perror("OPEN");
+				exit(0);
+			}
+			if((status = dup2(fdIn, 0)) < 0)
+			{
+				perror("DUP2");
+				exit(0);
+			}
+		}
+
+		if(outputRedirect != NULL)
+		{
+			int fdOut;
+			if((fdOut = open(outputRedirect, O_CREAT, O_WRONLY, 0777)) < 0)
+			{
+				perror("OPEN");
+				exit(0);
+			}
+			if((status = dup2(fdOut, 1)) < 0)
+			{
+				perror("DUP2");
+				exit(0);
+			}
+		}
+
+		if(execve(argv[0], argv, environ) < 0)
+		{
+			printf("%s: Command not found. \n", argv[0]);			    
+			exit(0);
+		}
+	}
+
+	if(waitpid(pid, &status, 0) < 0)
+	{
+		perror("WAITPID");
+		kill(pid, SIGKILL);
+	}
 }

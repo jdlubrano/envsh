@@ -9,15 +9,10 @@
 
 #define INPUT_LIMIT 256
 
-typedef struct word_list {
-	struct word_list * next;
+typedef struct arg_list {
+	struct arg_list * next;
 	char word[INPUT_LIMIT];
-} WORD_LIST;
-
-typedef struct string_list {
-	struct string_list * next;
-	char string[INPUT_LIMIT];
-} STRING_LIST;
+} ARG_LIST;
 
 typedef struct environ_list {
 	struct environ_list * next;

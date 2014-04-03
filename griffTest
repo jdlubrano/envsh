@@ -21,4 +21,14 @@
         setdir /usr/local
         setdir ./bin
         setdir ../share
+	
+	% Basic commands
+	% run the wc command on envsh.c
+		/usr/bin/wc -l /home/student/485/projects/envsh/envsh.c
+	% run the ls command
+		/bin/ls
+		/bin/ls -l -F -g -s /tmp
+	% cat multiple files together to the screen
+	/bin/cat /etc/issue /etc/hosts /etc/debian_version
 
+	% Commands with redirected I/O

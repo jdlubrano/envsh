@@ -1,0 +1,35 @@
+parser.y:14:13: error: conflicting types for ‘userCmd’
+envsh.h:17:6: note: previous declaration of ‘userCmd’ was here
+parser.y: In function ‘yyparse’:
+parser.y:63:5: warning: passing argument 1 of ‘makeArgList’ from incompatible pointer type [enabled by default]
+parser.y:18:12: note: expected ‘struct ARG_LIST *’ but argument is of type ‘char *’
+parser.y:63:5: error: too many arguments to function ‘makeArgList’
+parser.y:18:12: note: declared here
+parser.y:63:5: warning: passing argument 1 of ‘userCmd’ from incompatible pointer type [enabled by default]
+parser.y:14:13: note: expected ‘char *’ but argument is of type ‘struct ARG_LIST *’
+parser.y:63:5: error: too few arguments to function ‘userCmd’
+parser.y:14:13: note: declared here
+parser.y:67:5: warning: passing argument 1 of ‘makeArgList’ from incompatible pointer type [enabled by default]
+parser.y:18:12: note: expected ‘struct ARG_LIST *’ but argument is of type ‘char *’
+parser.y:67:5: error: too many arguments to function ‘makeArgList’
+parser.y:18:12: note: declared here
+parser.y:68:5: warning: passing argument 1 of ‘makeArgList’ from incompatible pointer type [enabled by default]
+parser.y:18:12: note: expected ‘struct ARG_LIST *’ but argument is of type ‘char *’
+parser.y:68:5: error: too many arguments to function ‘makeArgList’
+parser.y:18:12: note: declared here
+parser.y:69:5: warning: passing argument 1 of ‘makeArgList’ from incompatible pointer type [enabled by default]
+parser.y:18:12: note: expected ‘struct ARG_LIST *’ but argument is of type ‘char *’
+parser.y:69:5: error: too many arguments to function ‘makeArgList’
+parser.y:18:12: note: declared here
+parser.y:70:5: warning: passing argument 1 of ‘makeArgList’ from incompatible pointer type [enabled by default]
+parser.y:18:12: note: expected ‘struct ARG_LIST *’ but argument is of type ‘char *’
+parser.y:70:5: error: too many arguments to function ‘makeArgList’
+parser.y:18:12: note: declared here
+parser.y: At top level:
+parser.y:75:12: error: conflicting types for ‘makeArgList’
+parser.y:18:12: note: previous declaration of ‘makeArgList’ was here
+parser.y: In function ‘makeArgList’:
+parser.y:87:9: error: ‘wordList’ undeclared (first use in this function)
+parser.y:87:9: note: each undeclared identifier is reported only once for each function it appears in
+parser.y:88:1: warning: control reaches end of non-void function [-Wreturn-type]
+make: *** [y.tab.o] Error 1

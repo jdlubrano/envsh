@@ -15,8 +15,6 @@ alphaAug	(_|/|-|.|{alpha})
 
 digit		[0-9]
 
-varName		(_|{alpha})+
-
 %%
 
 [ \t]+		; /* Ignore whitespace */
@@ -43,11 +41,6 @@ varName		(_|{alpha})+
 			yylval.str[strlen(yylval.str)-1] = '\0';
 			return STRING; 
 		   }
-
-{varName}	{
-			yylval.varName = strdup(yytext);
-			return VAR_NAME;
-		}
 
 [^><% \t\n\"]+		{
 				yylval.word = strdup(yytext);

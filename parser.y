@@ -11,12 +11,11 @@
 #include "envsh.h"
 
 extern void builtIn(int cmd, char * str, char * varName);
-extern void userCmd(WORD_LIST * wordList);
+extern void userCmd(ARG_LIST * argList, char * inputRedirect, char * outputRedirect);
 int yylex(void);
 void yyerror(char * s);
-void printWordList(WORD_LIST * wordList);
-WORD_LIST * makeWordList(char * word, WORD_LIST * wordList);
-STRING_LIST * makeStringList(char * word, STRING_LIST * stringList);
+void printArgList(ARG_LIST * argList);
+ARG_LIST * makeArgList(char * arg, ARG_LIST * wordList);
 int yydebug = 1;
 /* static WORD_LIST * currentWordList = NULL; */
 
@@ -25,18 +24,14 @@ int yydebug = 1;
 /* Define the union for yylval */
 %union {
 	char * str;	/* string literals */
-	char * varName; /* environment variable names */
 	char * word;	/* words */
-	WORD_LIST * wordList;
-	STRING_LIST * stringList;
+	ARG_LIST * argList;
 };
 
 %token PROMPT SETENV UNSETENV LISTENV SETDIR BYE IOIN IOOUT NEWLINE
 %token <str> STRING
-%token <varName> VAR_NAME
 %token <word> WORD
-%type <wordList> word_list
-%type <stringList> string_list 
+%type <argList> arg_list user_command
 %type <str> command
 
 %%
@@ -58,56 +53,73 @@ line:
 
 command:
 		PROMPT STRING		{ builtIn(PROMPT, $2, NULL); }
-	      | SETENV VAR_NAME STRING	{ builtIn(SETENV, $3, $2); }
-	      |	UNSETENV VAR_NAME	{ builtIn(UNSETENV, NULL, $2); }
+	      | SETENV WORD STRING	{ builtIn(SETENV, $3, $2); }
+	      |	UNSETENV WORD		{ builtIn(UNSETENV, NULL, $2); }
 	      |	LISTENV			{ builtIn(LISTENV, NULL, NULL); }
 	      |	SETDIR WORD		{ builtIn(SETDIR, $2, NULL); }
 	      |	BYE			{ builtIn(BYE, NULL, NULL); }
-	      | word_list		{ userCmd($1); }
-	      |	word_list string_list	{ userCmd($1); }
+	      | user_command		{ 
+						userCmd($1, NULL, NULL);
+						free($1);
+					}
+	      | user_command IOIN WORD  	{
+							userCmd($1, $3, NULL);
+							free($1);
+						}
+	      | user_command IOOUT WORD		{
+							userCmd($1, NULL, $3);
+							free($1);
+						}
+	      | user_command IOIN WORD IOOUT WORD	{
+								userCmd($1, $3, $5);
+								free($1);
+							}
+	      ; 	
+
+user_command:
+	        WORD arg_list		{ 
+						/*ARG_LIST * argList = makeArgList($1, $2);
+						userCmd(argList); 
+						free(argList);*/
+						$$ = makeArgList($1, $2);
+					}
+	      | WORD			{ 
+						/*ARG_LIST * argList = makeArgList($1, $2);
+						userCmd(makeArgList($1, NULL)); 
+						free(argList);*/
+						$$ = makeArgList($1, NULL);
+					}
 	      ;
 
-word_list:
-		WORD			{ $$ = makeWordList($1, NULL); }
-	      |	word_list WORD		{ $$ = makeWordList($2, $1); }
-	      ;
-
-string_list:
-		STRING			{ $$ = makeStringList($1, NULL); }
-	      | string_list STRING	{ $$ = makeStringList($2, $1); }
+arg_list:
+		WORD			{ $$ = makeArgList($1, NULL); }
+	      |	STRING			{ $$ = makeArgList($1, NULL); }
+	      | WORD arg_list		{ $$ = makeArgList($1, $2); }	
+	      | STRING arg_list		{ $$ = makeArgList($1, $2); }
 	      ;
 
 %%
 
-WORD_LIST * makeWordList(char * word, WORD_LIST * wordList)
+ARG_LIST * makeArgList(char * arg, ARG_LIST * argList)
 {
-	/* Add current word to word_list */
-	WORD_LIST * newEntry = malloc(sizeof(WORD_LIST));
-	strncpy(newEntry->word, word, sizeof(newEntry->word));
-	newEntry->next = NULL;
-	if(wordList == NULL)
-		return newEntry;
-	WORD_LIST * currentEntry = wordList;
-	while(currentEntry->next != NULL)
-		currentEntry = currentEntry->next;
-	currentEntry->next = newEntry;
-	return wordList;
+	/* Add the current word or string to the front of the arg_list. */
+	/* The parser actually reads the last argument first. */
+	ARG_LIST * newEntry = malloc(sizeof(ARG_LIST));
+	strncpy(newEntry->word, arg, sizeof(newEntry->word));
+	newEntry->next = argList;
+	argList = newEntry;
+	return argList;
 }
 
-void printWordList(WORD_LIST * wordList)
+void printArgList(ARG_LIST * argList)
 {
-	WORD_LIST * currentWord = wordList;
-	printf("WORD_LIST\n");
-	while(currentWord != NULL)
+	ARG_LIST * currentArg = argList;
+	printf("ARG_LIST:\n");
+	while(currentArg != NULL)
 	{	
-		printf("%s\n", currentWord->word);	
-		currentWord = currentWord->next;
+		printf("%s\n", currentArg->word);	
+		currentArg = currentArg->next;
 	}
-}
-
-STRING_LIST * makeStringList(char * str, STRING_LIST * stringList)
-{
-	return NULL;
 }
 
 void yyerror(char * s)
