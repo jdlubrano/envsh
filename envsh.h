@@ -14,7 +14,7 @@
 void initCmdPrompt(void);
 void printCmdPrompt(void);
 void builtIn(int cmd, char * str, char * varName);
-void userCmd(WORD_LIST * wordList, STRING_LIST * stringList);
+void userCmd(WORD_LIST * wordList);
 
 ENVIRON_LIST * environList;
 

@@ -6,19 +6,19 @@
 #include "envsh.h"
 #include "y.tab.h"
 
-static char * cmdPrefix;
+static char * cmdPrompt;
 extern int INPUT_FROM_FILE;
 extern ENVIRON_LIST * environList;
 
 void initCmdPrompt()
 {
-	cmdPrefix = "envsh > ";
+	cmdPrompt = "envsh > ";
 }
 
 void printCmdPrompt()
 {
 	printf("\n");
-	printf("%s", cmdPrefix);
+	printf("%s", cmdPrompt);
 }
 
 void addToEnvironList(char * varName, char * varValue)
@@ -110,7 +110,7 @@ void builtIn(int cmd, char * str, char * varName)
 {
 	switch(cmd) {
 		case PROMPT: 
-			cmdPrefix = str;
+			cmdPrompt = str;
 			break;
 		case SETENV:
 			addToEnvironList(varName, str);
@@ -136,7 +136,57 @@ void builtIn(int cmd, char * str, char * varName)
 	}
 }
 
-void userCmd(WORD_LIST * wordList, STRING_LIST * stringList)
+void userCmd(WORD_LIST * wordList)
 {
-	/* Do nothing for now */
+	/* 
+	 * Count the number of entries in the 
+	 * word list in order to size the array.
+	 */
+	int wordListSize = 0;
+	int environListSize = 0;
+	WORD_LIST * wordListIterator = wordList;
+	/* Iterate through the word list to calculate the size */
+	while(wordListIterator != NULL)
+	{
+		wordListSize++;
+		wordListIterator = wordListIterator->next;
+	}
+	/* 
+	 * Allocate a new array for the args in the word list 
+	 * plus one for the NULL sentinel
+	 */ 
+	char ** argv = malloc((wordListSize + 1) * sizeof(char[INPUT_LIMIT]));
+	/* Copy word list to argv */
+	wordListIterator = wordList;
+	int i = 0;
+	while(wordListIterator != NULL)
+	{
+		argv[i] = wordListIterator->word;
+		wordListIterator = wordListIterator->next;
+		i++;
+	}
+	argv[i] = NULL;
+	ENVIRON_LIST * environListIterator = environList;
+	while(environListIterator != NULL)
+	{
+		environListSize++;
+		environListIterator = environListIterator->next;
+	}
+	char ** environ = malloc((environListSize + 1) * sizeof(char[2*INPUT_LIMIT + 1]));
+	/* 
+	 * Create environ strings in VAR=VAL format for each variable
+	 * in the environList.
+	 */
+	environListIterator = environList;
+	i = 0;
+	while(environListIterator != NULL)
+	{
+		environ[i] = environListIterator->varName;
+		strcat(environ[i], "=");
+		strcat(environ[i], environListIterator->varValue);
+		environListIterator = environListIterator->next;
+		i++;
+	}
+	environ[i] = NULL;
+	execve(argv[0], argv, environ);
 }

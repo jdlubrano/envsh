@@ -11,12 +11,12 @@
 
 typedef struct word_list {
 	struct word_list * next;
-	char * word;
+	char word[INPUT_LIMIT];
 } WORD_LIST;
 
 typedef struct string_list {
 	struct string_list * next;
-	char * string;
+	char string[INPUT_LIMIT];
 } STRING_LIST;
 
 typedef struct environ_list {

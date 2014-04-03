@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 /*
 #include "envTable.h"
 */
@@ -13,9 +14,11 @@ extern void builtIn(int cmd, char * str, char * varName);
 extern void userCmd(WORD_LIST * wordList, STRING_LIST * stringList);
 int yylex(void);
 void yyerror(char * s);
+void printWordList(WORD_LIST * wordList);
 WORD_LIST * makeWordList(char * word, WORD_LIST * wordList);
 STRING_LIST * makeStringList(char * word, STRING_LIST * stringList);
 int yydebug = 1;
+/* static WORD_LIST * currentWordList = NULL; */
 
 %}
 
@@ -78,8 +81,28 @@ string_list:
 
 WORD_LIST * makeWordList(char * word, WORD_LIST * wordList)
 {
-	/* create new word and add it to the end of the list */
-	return NULL;
+	/* Add current word to word_list */
+	WORD_LIST * newEntry = malloc(sizeof(WORD_LIST));
+	strncpy(newEntry->word, word, sizeof(newEntry->word));
+	newEntry->next = NULL;
+	if(wordList == NULL)
+		return newEntry;
+	WORD_LIST * currentEntry = wordList;
+	while(currentEntry->next != NULL)
+		currentEntry = currentEntry->next;
+	currentEntry->next = newEntry;
+	return wordList;
+}
+
+void printWordList(WORD_LIST * wordList)
+{
+	WORD_LIST * currentWord = wordList;
+	printf("WORD_LIST\n");
+	while(currentWord != NULL)
+	{	
+		printf("%s\n", currentWord->word);	
+		currentWord = currentWord->next;
+	}
 }
 
 STRING_LIST * makeStringList(char * str, STRING_LIST * stringList)

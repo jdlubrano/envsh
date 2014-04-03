@@ -1,0 +1,4 @@
+lex.yy.*
+y.tab.*
+envsh
+*.o
