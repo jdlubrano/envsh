@@ -10,4 +10,6 @@ listenv
 unsetenv TEST
 unsetenv LESS
 listenv
-/bin/ls -a -l --color=always
+/bin/ls -a -l --color=always > outFile.txt
+/bin/grep LIST < envsh.c
+/bin/grep LIST < envsh.h > outFile2.txt
