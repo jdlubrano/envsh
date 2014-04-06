@@ -1,0 +1,53 @@
+Joel Lubrano
+Katie Taylor
+doc.txt
+4/6/14
+
+The envsh command shell was created for CS 485-001,002.
+The envsh shell executes the following built-in commands:
+
+% any text
+
+    The % command is a comment command. It tells your shell that this is simply a comment line. 
+    Any text after the % will be ignored. The % must occur as the first token on the line.
+
+prompt string
+
+    Set the shell prompt to string. The default prompt should be "envsh > ".
+
+setenv variable_name string
+
+    This command sets the environment variable variable_name to the value contained in string. 
+    The list of currently set environment variables should be passed to applications that are executed.
+
+unsetenv variable_name
+
+    This command removes the environment variable variable_name from the list of environment variables passed to applications.
+
+listenv
+
+    This command prints a list of the current environment variables and their values.
+
+setdir directory_name
+
+    This command sets the shell's concept of the current directory to directory_name. See getwd(3) and chdir(2) system calls.
+
+bye
+
+    Exit your shell program. 
+
+===============================================================================================
+
+The envsh shell also executes any programs called by the user.  Such user program commands have
+the following syntax:
+
+cmd [arg]* [< infile] [> outfile] 
+
+NOTE: cmd must contain the full path for any program being called.
+
+===============================================================================================
+
+The scanner and parser for the envsh shell were created using flex and bison respectively.
+The scanner tokenizing specifications are implemented in the file "scanner.l".
+The parser is implemented in the file "parser.y".
+

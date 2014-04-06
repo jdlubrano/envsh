@@ -12,14 +12,15 @@ Authors
 Files
 -------
 
-envsh.h
-envsh_structs.h
-envsh.c
-main.c
-README.md
-makefile
-parser.y
-scanner.l
-testfile
-doc.txt
+* .gitignore
+* envsh.h
+* envsh_structs.h
+* envsh.c
+* main.c
+* README.md
+* makefile
+* parser.y
+* scanner.l
+* testfile
+* doc.txt
 

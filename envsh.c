@@ -202,6 +202,7 @@ void userCmd(ARG_LIST * argList, char * inputRedirect, char * outputRedirect)
 
 	if((pid = fork()) == 0)
 	{
+		/* Child process */
 		if(inputRedirect != NULL)
 		{
 			int fdIn;
