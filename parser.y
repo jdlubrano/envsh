@@ -49,6 +49,11 @@ lines:
 line:
 		command NEWLINE		{ printCmdPrompt(); }
 	      | NEWLINE			{ printCmdPrompt(); }
+	      | error NEWLINE		{ 
+						yyerrok;
+						yyclearin;
+						printCmdPrompt();
+					}
 	      ;
 
 command:
@@ -124,5 +129,5 @@ void printArgList(ARG_LIST * argList)
 
 void yyerror(char * s)
 {
-	printf("Syntax error: %s\n", s);
+	printf("%s\n", s);
 }
