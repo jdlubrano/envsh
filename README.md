@@ -8,3 +8,18 @@ Authors
 
 * Joel Lubrano
 * Katie Taylor
+
+Files
+-------
+
+envsh.h
+envsh_structs.h
+envsh.c
+main.c
+README.md
+makefile
+parser.y
+scanner.l
+testfile
+doc.txt
+
