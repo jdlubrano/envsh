@@ -4,7 +4,7 @@
 # Creates envsh program for CS 485
 # 03/30/2014
 
-CC 	= gcc -Wall
+CC 	= gcc -g -Wall
 OPTIONS = -lfl
 FLEX	= /usr/bin/flex
 OBJECTS = y.tab.o lex.yy.o main.o envsh.o

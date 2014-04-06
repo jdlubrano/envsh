@@ -22,7 +22,6 @@ void initCmdPrompt()
 
 void printCmdPrompt()
 {
-	printf("\n");
 	printf("%s", cmdPrompt);
 }
 
@@ -67,7 +66,7 @@ void listEnv()
 	ENVIRON_LIST * currentEntry = environList;
 	while(currentEntry != NULL)
 	{
-		printf("\n%s=%s", currentEntry->varName, currentEntry->varValue);
+		printf("%s=%s\n", currentEntry->varName, currentEntry->varValue);
 		currentEntry = currentEntry->next;
 	}
 }
@@ -90,7 +89,6 @@ void removeFromEnv(char * varName)
 			{
 				/* Start the list at the second entry */
 				environList = currentEntry->next;
-				free(currentEntry);
 				removedEntry = 1;
 			}
 			else
@@ -102,6 +100,7 @@ void removeFromEnv(char * varName)
 					(currentEntry->next)->prev = currentEntry->prev;
 				removedEntry = 1;
 			}
+			free(currentEntry);
 		}
 		if(!removedEntry)
 			currentEntry = currentEntry->next;
@@ -180,7 +179,7 @@ void userCmd(ARG_LIST * argList, char * inputRedirect, char * outputRedirect)
 	/*
 	 * NOTE: The environ array has to be able to hold a string of size "[256]=[256]"
 	 */
-	char ** environ = malloc((environListSize + 1) * sizeof(char[2*INPUT_LIMIT + 1]));
+	char ** environ = (char **) malloc((environListSize + 1) * sizeof(char *));
 	/* 
 	 * Create environ strings in VAR=VAL format for each variable
 	 * in the environList.
@@ -189,7 +188,8 @@ void userCmd(ARG_LIST * argList, char * inputRedirect, char * outputRedirect)
 	i = 0;
 	while(environListIterator != NULL)
 	{
-		environ[i] = environListIterator->varName;
+		environ[i] = malloc((2*INPUT_LIMIT)+1);
+		strncpy(environ[i], environListIterator->varName, (2*INPUT_LIMIT + 3));	
 		strcat(environ[i], "=");
 		strcat(environ[i], environListIterator->varValue);
 		environListIterator = environListIterator->next;
@@ -220,7 +220,7 @@ void userCmd(ARG_LIST * argList, char * inputRedirect, char * outputRedirect)
 		if(outputRedirect != NULL)
 		{
 			int fdOut;
-			if((fdOut = open(outputRedirect, O_CREAT, O_WRONLY, 0777)) < 0)
+			if((fdOut = open(outputRedirect, O_CREAT|O_WRONLY, 0777)) < 0)
 			{
 				perror("OPEN");
 				exit(0);
@@ -231,7 +231,6 @@ void userCmd(ARG_LIST * argList, char * inputRedirect, char * outputRedirect)
 				exit(0);
 			}
 		}
-
 		if(execve(argv[0], argv, environ) < 0)
 		{
 			printf("%s: Command not found. \n", argv[0]);			    
@@ -244,4 +243,12 @@ void userCmd(ARG_LIST * argList, char * inputRedirect, char * outputRedirect)
 		perror("WAITPID");
 		kill(pid, SIGKILL);
 	}
+	/*
+	 * Free memory allocated for argv and environ arrays
+	 */
+	free(argv);
+	for(i = 0; i <= environListSize; i++)
+		free(environ[i]);
+	free(environ);
+	//free(environPlaceHolder);
 }
